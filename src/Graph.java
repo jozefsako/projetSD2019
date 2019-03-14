@@ -1,6 +1,16 @@
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map.Entry;
+import java.util.Queue;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public class Graph {
 
@@ -9,6 +19,8 @@ public class Graph {
 	private HashMap<String, String>actorsName;
 	private HashMap<String, Actor> actorsID;
 	private HashMap<String, Movie> movies;
+	
+	Document document;
 
 	public Graph() {
 		this.moviesOfActor = new HashMap<>();
@@ -127,7 +139,7 @@ public class Graph {
 				}
 			}
 		}
-		
+		formaterHistorique(acteurA ,pathActors, pathMovies);
 	}
 
 	/*
@@ -138,4 +150,52 @@ public class Graph {
 
 	}
 
+	public Path formaterHistorique(String acteurA ,HashMap<Actor, Actor> pathActors, HashMap<Actor, Movie> pathMovies) {
+		
+		int cost = 0, nbMovies = 0;
+		Queue<Actor> actors = new ArrayDeque<Actor>();
+		Queue<Movie> movies = new ArrayDeque<Movie>();
+		actors.add(actorsID.get(actorsName.get(acteurA)));
+		Actor tmpActor = pathActors.get(actorsID.get(actorsName.get(acteurA)));
+		
+		Actor parent = tmpActor, child;
+		for(Entry<Actor, Actor> entry : pathActors.entrySet()) {
+			if(entry.getKey().getName().equalsIgnoreCase(parent.getName())) {
+				parent = entry.getValue();
+				child = null;
+			}
+		}
+//		while (tmpActor != null) {
+//			System.out.println(tmpActor);
+//			
+//			tmpActor = pathActors.get(tmpActor);
+//		}
+		
+		
+		// TODO
+		Path path = new Path(cost, nbMovies, actors, movies);
+		return path;
+	}
+	
+	public boolean ecrireFichierXML(Path path) {
+		try {
+			DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder documentBuilder;
+			documentBuilder = documentFactory.newDocumentBuilder();
+			Document document = documentBuilder.newDocument();
+			
+			Element root = document.createElement("path");
+			Attr attr0 = document.createAttribute("cost");
+			Attr attr1 = document.createAttribute("nbMovies");
+			
+			// TODO
+			
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
+	}
+	
 }
