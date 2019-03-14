@@ -1,12 +1,11 @@
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class Movie {
 
 	private String title;
 	private String year;
-	private List<String> actors;
+	private ArrayList<String> actors;
 
 	public Movie(String year, String actors) {
 		this.year = year;
@@ -22,7 +21,7 @@ public class Movie {
 		return year;
 	}
 
-	public List<String> getActors() {
+	public ArrayList<String> getActors() {
 		return actors;
 	}
 

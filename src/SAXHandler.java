@@ -14,7 +14,6 @@ public class SAXHandler extends DefaultHandler {
 	
 	Graph graph = new Graph();
 
-
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		
