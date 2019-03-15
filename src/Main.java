@@ -13,7 +13,7 @@ public class Main {
 			saxParser.parse(inputFile, userhandler);
 			Graph g = userhandler.getGraph();
 
-			g.calculerCheminLePlusCourt("Macaulay Culkin", "Will Smith(I)", "output.xml");
+			g.calculerCheminLePlusCourt("Macaulay Culkin", "Guillaume Canet", "output.xml");
 			// g.calculerCheminCoutMinimum("Macaulay Culkin", "Guillaume Canet",
 			// "output2.xml");
 

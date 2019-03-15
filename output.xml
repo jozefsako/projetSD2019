@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<path cost="0" nbMovies="2">
-    <actor>Will Smith(I)</actor>
-    <movie name="Enemy of the State" year="1998"/>
-    <actor>John Capodice</actor>
+<path cost="0" nbMovies="3">
+    <actor>Guillaume Canet</actor>
+    <movie name="Beach, The" year="2000"/>
+    <actor>Tilda Swinton</actor>
+    <movie name="Constantine" year="2005"/>
+    <actor>Pruitt Taylor Vince</actor>
     <movie name="Jacob's Ladder" year="1990"/>
     <actor>Macaulay Culkin</actor>
 </path>
