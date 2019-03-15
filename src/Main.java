@@ -1,4 +1,5 @@
 import java.io.File;
+
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -11,18 +12,16 @@ public class Main {
 			SAXHandler userhandler = new SAXHandler();
 			saxParser.parse(inputFile, userhandler);
 			Graph g = userhandler.getGraph();
-			
-			g.calculerCheminLePlusCourt("Macaulay Culkin", "Guillaume Canet", "output.xml");
-			//g.calculerCheminCoutMinimum("Macaulay Culkin", "Guillaume Canet", "output2.xml"); 
-			
+
+			g.calculerCheminLePlusCourt("Macaulay Culkin", "Will Smith(I)", "output.xml");
+			// g.calculerCheminCoutMinimum("Macaulay Culkin", "Guillaume Canet",
+			// "output2.xml");
+
 			/*
-			System.out.println("\tMovies");
-			for(Entry<String, Movie> entry: g.getMovies().entrySet()) {
-				System.out.println(entry.getValue());
-			}
-			*/
-			
-			
+			 * System.out.println("\tMovies"); for(Entry<String, Movie> entry:
+			 * g.getMovies().entrySet()) { System.out.println(entry.getValue()); }
+			 */
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

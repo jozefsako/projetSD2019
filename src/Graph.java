@@ -1,3 +1,4 @@
+import java.io.File;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -7,6 +8,12 @@ import java.util.Queue;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -16,10 +23,10 @@ public class Graph {
 
 	private HashMap<String, HashSet<Movie>> moviesOfActor;
 	private HashMap<String, HashSet<Actor>> actorsOfMovie;
-	private HashMap<String, String>actorsName;
+	private HashMap<String, String> actorsName;
 	private HashMap<String, Actor> actorsID;
 	private HashMap<String, Movie> movies;
-	
+
 	Document document;
 
 	public Graph() {
@@ -42,7 +49,7 @@ public class Graph {
 		return actorsID;
 	}
 
-	public HashMap<String, String> getActorsName(){
+	public HashMap<String, String> getActorsName() {
 		return actorsName;
 	}
 
@@ -65,7 +72,7 @@ public class Graph {
 	}
 
 	/*
-	 * BFS : Breadth First Search 
+	 * BFS : Breadth First Search
 	 */
 	public void calculerCheminLePlusCourt(String acteurA, String acteurB, String output) {
 		// TODO Auto-generated method stub
@@ -76,27 +83,27 @@ public class Graph {
 
 		HashMap<Actor, Actor> pathActors = new HashMap<>();
 		HashMap<Actor, Movie> pathMovies = new HashMap<>();
-		
+
 		queue.add(this.actorsID.get(this.actorsName.get(acteurA)));
 		visited.add(this.actorsName.get(acteurA));
-		
+
 		boolean found = false;
 
-		while(!queue.isEmpty() || found==false) {
+		while (!queue.isEmpty() || found == false) {
 
 			Actor current = queue.removeFirst();
-		
+
 			for (Movie movie : current.getMovies()) {
 
-				if(!visitedMovies.contains(movie)) {
+				if (!visitedMovies.contains(movie)) {
 
-					if(movie.getActors().contains(this.actorsName.get(acteurB))) {
-						//pathActors.put(this.actorsID.get(this.actorsName.get(acteurB)), current);
-						//pathMovies.put(this.actorsID.get(this.actorsName.get(acteurB)), movie);
+					if (movie.getActors().contains(this.actorsName.get(acteurB))) {
+						// pathActors.put(this.actorsID.get(this.actorsName.get(acteurB)), current);
+						// pathMovies.put(this.actorsID.get(this.actorsName.get(acteurB)), movie);
 						found = true;
 					}
 					for (String actorID : movie.getActors()) {
-						if(!visited.contains(actorID)) {
+						if (!visited.contains(actorID)) {
 							visited.add(actorID);
 							queue.addLast(this.actorsID.get(actorID));
 							pathActors.put(this.actorsID.get(actorID), current);
@@ -107,39 +114,15 @@ public class Graph {
 				}
 			}
 		}
-		Actor actor = pathActors.get(this.actorsID.get(this.actorsName.get(acteurB)));
-		
-		HashSet<Movie> solutionM = new HashSet<>();
-		HashSet<Actor> solutionA = new HashSet<>();
-		
-		solutionA.add(this.actorsID.get(this.actorsName.get(acteurA)));
-		solutionA.add(this.actorsID.get(this.actorsName.get(acteurB)));
-		
-		while(pathActors.get(actor)!=null) {
-			System.out.println("<Actor>" + actor.getName() + "</Actor>");
-			System.out.println("<Movie>" + pathMovies.get(actor).getTitle() + "</Movie>");
-			solutionM.add(pathMovies.get(actor));
-			solutionA.add(actor);
-			actor = pathActors.get(actor);
+
+		Path path = formaterHistorique(acteurA, acteurB, pathActors, pathMovies);
+		boolean isOk = ecrireFichierXML(path, output);
+		if (isOk) {
+			System.out.println("OK");
+		} else {
+			System.out.println("KO");
 		}
-		
-		/*
-		 * Analyse Solution
-		 */
-		System.out.println("\n\nSOL Movies");
-		for (Movie movie : solutionM) {
-			System.out.println(movie);
-		}
-		
-		System.out.println("\n\nSOL actors");
-		for (Actor a : solutionA) {
-			for (Movie movie : solutionM) {
-				if(movie.getActors().contains(a.getId())) {
-					System.out.println("[ " + a.getName() + " - " + a.getId() + " ] joue dans => " + movie.getTitle());
-				}
-			}
-		}
-		formaterHistorique(acteurA ,pathActors, pathMovies);
+
 	}
 
 	/*
@@ -150,52 +133,81 @@ public class Graph {
 
 	}
 
-	public Path formaterHistorique(String acteurA ,HashMap<Actor, Actor> pathActors, HashMap<Actor, Movie> pathMovies) {
-		
+	public Path formaterHistorique(String acteurA, String acteurB, HashMap<Actor, Actor> pathActors,
+			HashMap<Actor, Movie> pathMovies) {
+
 		int cost = 0, nbMovies = 0;
 		Queue<Actor> actors = new ArrayDeque<Actor>();
 		Queue<Movie> movies = new ArrayDeque<Movie>();
-		actors.add(actorsID.get(actorsName.get(acteurA)));
-		Actor tmpActor = pathActors.get(actorsID.get(actorsName.get(acteurA)));
-		
-		Actor parent = tmpActor, child;
-		for(Entry<Actor, Actor> entry : pathActors.entrySet()) {
-			if(entry.getKey().getName().equalsIgnoreCase(parent.getName())) {
-				parent = entry.getValue();
-				child = null;
+		Actor tmpActor = actorsID.get(actorsName.get(acteurB));
+		Actor parent = tmpActor;
+
+		while (!parent.getName().equalsIgnoreCase(acteurA)) {
+			for (Entry<Actor, Actor> entry : pathActors.entrySet()) {
+				if (entry.getKey().getName().equalsIgnoreCase(parent.getName())) {
+					actors.add(parent);
+					movies.add(pathMovies.get(parent));
+					parent = entry.getValue();
+				}
 			}
 		}
-//		while (tmpActor != null) {
-//			System.out.println(tmpActor);
-//			
-//			tmpActor = pathActors.get(tmpActor);
-//		}
-		
-		
-		// TODO
+		actors.add(actorsID.get(actorsName.get(acteurA)));
+		nbMovies = movies.size();
+
+		// TODO cost
 		Path path = new Path(cost, nbMovies, actors, movies);
 		return path;
 	}
-	
-	public boolean ecrireFichierXML(Path path) {
+
+	public boolean ecrireFichierXML(Path path, String output) {
 		try {
 			DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder documentBuilder;
 			documentBuilder = documentFactory.newDocumentBuilder();
 			Document document = documentBuilder.newDocument();
-			
+
 			Element root = document.createElement("path");
-			Attr attr0 = document.createAttribute("cost");
-			Attr attr1 = document.createAttribute("nbMovies");
-			
-			// TODO
-			
-		} catch (ParserConfigurationException e) {
+			Attr attrCost = document.createAttribute("cost");
+			Attr attrNbMovies = document.createAttribute("nbMovies");
+			attrCost.setValue(path.getCost() + "");
+			attrNbMovies.setValue(path.getNbMovies() + "");
+			root.setAttributeNode(attrCost);
+			root.setAttributeNode(attrNbMovies);
+			document.appendChild(root);
+
+			Actor actor = path.getActors().poll();
+			Movie movie = path.getMovies().poll();
+			while (actor != null) {
+				Element actorElement = document.createElement("actor");
+				actorElement.appendChild(document.createTextNode(actor.getName()));
+				root.appendChild(actorElement);
+				if (movie != null) {
+					Element movieElement = document.createElement("movie");
+					Attr nameAttr = document.createAttribute("name");
+					Attr yearAttr = document.createAttribute("year");
+					nameAttr.setValue(movie.getTitle());
+					yearAttr.setValue(movie.getYear());
+					movieElement.setAttributeNode(nameAttr);
+					movieElement.setAttributeNode(yearAttr);
+					root.appendChild(movieElement);
+					movie = path.getMovies().poll();
+				}
+				actor = path.getActors().poll();
+			}
+
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource domSource = new DOMSource(document);
+			StreamResult streamResult = new StreamResult(new File(output));
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.transform(domSource, streamResult);
+
+		} catch (ParserConfigurationException | TransformerException e) {
 			e.printStackTrace();
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 }
