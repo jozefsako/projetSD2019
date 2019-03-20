@@ -1,9 +1,12 @@
 import java.io.File;
 import java.util.ArrayDeque;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Queue;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -87,8 +90,7 @@ public class Graph {
 		visited.add(this.actorsName.get(acteurA));
 
 		boolean found = false;
-
-		while (!queue.isEmpty() || found == false) {
+		while(!queue.isEmpty() && !found) {
 
 			Actor current = queue.removeFirst();
 
@@ -96,17 +98,16 @@ public class Graph {
 
 				if (!visitedMovies.contains(movie)) {
 
-					if (movie.getActors().contains(this.actorsName.get(acteurB))) {
-						// pathActors.put(this.actorsID.get(this.actorsName.get(acteurB)), current);
-						// pathMovies.put(this.actorsID.get(this.actorsName.get(acteurB)), movie);
+					if(movie.getActors().contains(this.actorsName.get(acteurB))) {
 						found = true;
 					}
+
 					for (String actorID : movie.getActors()) {
-						if (!visited.contains(actorID)) {
-							visited.add(actorID);
-							queue.addLast(this.actorsID.get(actorID));
+						if(!visited.contains(actorID)) {
 							pathActors.put(this.actorsID.get(actorID), current);
 							pathMovies.put(this.actorsID.get(actorID), movie);
+							queue.addLast(this.actorsID.get(actorID));
+							visited.add(actorID);
 						}
 					}
 					visitedMovies.add(movie);
@@ -133,7 +134,16 @@ public class Graph {
 	 */
 	public void calculerCheminCoutMinimum(String acteurA, String acteurB, String output) {
 		// TODO Auto-generated method stub
-
+		
+		HashSet<Actor> visited = new HashSet<>();
+		SortedSet<Actor> sorted = new TreeSet<>(new Comparator<Actor>() {
+			
+			@Override
+			public int compare(Actor o1, Actor o2) {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+		});
 	}
 
 	public Path formaterHistorique(String acteurA, String acteurB, HashMap<Actor, Actor> pathActors,
