@@ -1,12 +1,9 @@
 import java.util.ArrayDeque;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map.Entry;
-import java.util.Queue;
+import java.util.SortedSet;
 import java.util.TreeSet;
-
-import apple.laf.JRSUIUtils.Tree;
 
 public class Graph {
 
@@ -15,7 +12,8 @@ public class Graph {
 	private HashMap<String, String>actorsName;
 	private HashMap<String, Actor> actorsID;
 	private HashMap<String, Movie> movies;
-
+	public static final int MAX_VALUE = Integer.MAX_VALUE;
+	
 	public Graph() {
 		this.moviesOfActor = new HashMap<>();
 		this.actorsOfMovie = new HashMap<>();
@@ -70,70 +68,35 @@ public class Graph {
 
 		HashMap<Actor, Actor> pathActors = new HashMap<>();
 		HashMap<Actor, Movie> pathMovies = new HashMap<>();
-		
+
 		queue.add(this.actorsID.get(this.actorsName.get(acteurA)));
 		visited.add(this.actorsName.get(acteurA));
-		
-		boolean found = false;
 
-		while(!queue.isEmpty() || found==false) {
+		boolean found = false;
+		while(!queue.isEmpty() && !found) {
 
 			Actor current = queue.removeFirst();
-		
+
 			for (Movie movie : current.getMovies()) {
 
 				if(!visitedMovies.contains(movie)) {
 
 					if(movie.getActors().contains(this.actorsName.get(acteurB))) {
-						//pathActors.put(this.actorsID.get(this.actorsName.get(acteurB)), current);
-						//pathMovies.put(this.actorsID.get(this.actorsName.get(acteurB)), movie);
 						found = true;
 					}
+
 					for (String actorID : movie.getActors()) {
 						if(!visited.contains(actorID)) {
-							visited.add(actorID);
-							queue.addLast(this.actorsID.get(actorID));
 							pathActors.put(this.actorsID.get(actorID), current);
 							pathMovies.put(this.actorsID.get(actorID), movie);
+							queue.addLast(this.actorsID.get(actorID));
+							visited.add(actorID);
 						}
 					}
 					visitedMovies.add(movie);
 				}
 			}
 		}
-		Actor actor = pathActors.get(this.actorsID.get(this.actorsName.get(acteurB)));
-		
-		HashSet<Movie> solutionM = new HashSet<>();
-		HashSet<Actor> solutionA = new HashSet<>();
-		
-		solutionA.add(this.actorsID.get(this.actorsName.get(acteurA)));
-		solutionA.add(this.actorsID.get(this.actorsName.get(acteurB)));
-		
-		while(pathActors.get(actor)!=null) {
-			System.out.println("<Actor>" + actor.getName() + "</Actor>");
-			System.out.println("<Movie>" + pathMovies.get(actor).getTitle() + "</Movie>");
-			solutionM.add(pathMovies.get(actor));
-			solutionA.add(actor);
-			actor = pathActors.get(actor);
-		}
-		
-		/*
-		 * Analyse Solution
-		 */
-		System.out.println("\n\nSOL Movies");
-		for (Movie movie : solutionM) {
-			System.out.println(movie);
-		}
-		
-		System.out.println("\n\nSOL actors");
-		for (Actor a : solutionA) {
-			for (Movie movie : solutionM) {
-				if(movie.getActors().contains(a.getId())) {
-					System.out.println("[ " + a.getName() + " - " + a.getId() + " ] joue dans => " + movie.getTitle());
-				}
-			}
-		}
-		
 	}
 
 	/*
@@ -141,7 +104,16 @@ public class Graph {
 	 */
 	public void calculerCheminCoutMinimum(String acteurA, String acteurB, String output) {
 		// TODO Auto-generated method stub
-
+		
+		HashSet<Actor> visited = new HashSet<>();
+		SortedSet<Actor> sorted = new TreeSet<>(new Comparator<Actor>() {
+			
+			@Override
+			public int compare(Actor o1, Actor o2) {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+		});
 	}
 
 }
