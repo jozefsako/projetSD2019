@@ -1,19 +1,37 @@
+import java.io.File;
 import java.util.ArrayDeque;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public class Graph {
 
 	private HashMap<String, HashSet<Movie>> moviesOfActor;
 	private HashMap<String, HashSet<Actor>> actorsOfMovie;
-	private HashMap<String, String>actorsName;
+	private HashMap<String, String> actorsName;
 	private HashMap<String, Actor> actorsID;
 	private HashMap<String, Movie> movies;
-	public static final int MAX_VALUE = Integer.MAX_VALUE;
-	
+
+	Document document;
+
 	public Graph() {
 		this.moviesOfActor = new HashMap<>();
 		this.actorsOfMovie = new HashMap<>();
@@ -34,7 +52,7 @@ public class Graph {
 		return actorsID;
 	}
 
-	public HashMap<String, String> getActorsName(){
+	public HashMap<String, String> getActorsName() {
 		return actorsName;
 	}
 
@@ -57,7 +75,7 @@ public class Graph {
 	}
 
 	/*
-	 * BFS : Breadth First Search 
+	 * BFS : Breadth First Search
 	 */
 	public void calculerCheminLePlusCourt(String acteurA, String acteurB, String output) {
 		// TODO Auto-generated method stub
@@ -79,7 +97,7 @@ public class Graph {
 
 			for (Movie movie : current.getMovies()) {
 
-				if(!visitedMovies.contains(movie)) {
+				if (!visitedMovies.contains(movie)) {
 
 					if(movie.getActors().contains(this.actorsName.get(acteurB))) {
 						found = true;
@@ -97,6 +115,15 @@ public class Graph {
 				}
 			}
 		}
+
+		Path path = formaterHistorique(acteurA, acteurB, pathActors, pathMovies);
+		boolean isOk = ecrireFichierXML(path, output);
+		if (isOk) {
+			System.out.println("OK");
+		} else {
+			System.out.println("KO");
+		}
+
 	}
 
 	/*
@@ -114,6 +141,83 @@ public class Graph {
 				return 0;
 			}
 		});
+	}
+
+	public Path formaterHistorique(String acteurA, String acteurB, HashMap<Actor, Actor> pathActors,
+			HashMap<Actor, Movie> pathMovies) {
+
+		int cost = 0, nbMovies = 0;
+		Queue<Actor> actors = new ArrayDeque<Actor>();
+		Queue<Movie> movies = new ArrayDeque<Movie>();
+		Actor tmpActor = actorsID.get(actorsName.get(acteurB));
+		Actor parent = tmpActor;
+
+		while (!parent.getName().equalsIgnoreCase(acteurA)) {
+			for (Entry<Actor, Actor> entry : pathActors.entrySet()) {
+				if (entry.getKey().getName().equalsIgnoreCase(parent.getName())) {
+					actors.add(parent);
+					movies.add(pathMovies.get(parent));
+					parent = entry.getValue();
+				}
+			}
+		}
+		actors.add(actorsID.get(actorsName.get(acteurA)));
+		nbMovies = movies.size();
+
+		// TODO cost
+		Path path = new Path(cost, nbMovies, actors, movies);
+		return path;
+	}
+
+	public boolean ecrireFichierXML(Path path, String output) {
+		try {
+			DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder documentBuilder;
+			documentBuilder = documentFactory.newDocumentBuilder();
+			Document document = documentBuilder.newDocument();
+
+			Element root = document.createElement("path");
+			Attr attrCost = document.createAttribute("cost");
+			Attr attrNbMovies = document.createAttribute("nbMovies");
+			attrCost.setValue(path.getCost() + "");
+			attrNbMovies.setValue(path.getNbMovies() + "");
+			root.setAttributeNode(attrCost);
+			root.setAttributeNode(attrNbMovies);
+			document.appendChild(root);
+
+			Actor actor = path.getActors().poll();
+			Movie movie = path.getMovies().poll();
+			while (actor != null) {
+				Element actorElement = document.createElement("actor");
+				actorElement.appendChild(document.createTextNode(actor.getName()));
+				root.appendChild(actorElement);
+				if (movie != null) {
+					Element movieElement = document.createElement("movie");
+					Attr nameAttr = document.createAttribute("name");
+					Attr yearAttr = document.createAttribute("year");
+					nameAttr.setValue(movie.getTitle());
+					yearAttr.setValue(movie.getYear());
+					movieElement.setAttributeNode(nameAttr);
+					movieElement.setAttributeNode(yearAttr);
+					root.appendChild(movieElement);
+					movie = path.getMovies().poll();
+				}
+				actor = path.getActors().poll();
+			}
+
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource domSource = new DOMSource(document);
+			StreamResult streamResult = new StreamResult(new File(output));
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.transform(domSource, streamResult);
+
+		} catch (ParserConfigurationException | TransformerException e) {
+			e.printStackTrace();
+			return false;
+		}
+
+		return true;
 	}
 
 }
