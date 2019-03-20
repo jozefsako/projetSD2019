@@ -12,8 +12,11 @@ public class Main {
 			SAXHandler userhandler = new SAXHandler();
 			saxParser.parse(inputFile, userhandler);
 			Graph g = userhandler.getGraph();
-
-			g.calculerCheminLePlusCourt("Macaulay Culkin", "Guillaume Canet", "output.xml");
+			try {
+				g.calculerCheminLePlusCourt("Macaulay Culkin", "Guillaume Canet", "output.xml");
+			}catch(ActorNotFoundException ex) {
+				System.out.println(ex.getMessage());
+			}
 			// g.calculerCheminCoutMinimum("Macaulay Culkin", "Guillaume Canet",
 			// "output2.xml");
 

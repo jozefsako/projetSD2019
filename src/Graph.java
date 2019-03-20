@@ -74,8 +74,7 @@ public class Graph {
 	/*
 	 * BFS : Breadth First Search
 	 */
-	public void calculerCheminLePlusCourt(String acteurA, String acteurB, String output) {
-		// TODO Auto-generated method stub
+	public void calculerCheminLePlusCourt(String acteurA, String acteurB, String output) throws ActorNotFoundException {
 
 		HashSet<String> visited = new HashSet<>();
 		HashSet<Movie> visitedMovies = new HashSet<>();
@@ -113,6 +112,10 @@ public class Graph {
 					visitedMovies.add(movie);
 				}
 			}
+		}
+		
+		if(!found) {
+			throw new ActorNotFoundException("Pas de lien trouvé entre " + acteurA + " et " + acteurB + " non trouvé");
 		}
 
 		Path path = formaterHistorique(acteurA, acteurB, pathActors, pathMovies);
