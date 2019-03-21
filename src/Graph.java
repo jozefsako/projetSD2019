@@ -117,11 +117,11 @@ public class Graph {
 		}
 
 		Path path = formaterHistorique(acteurA, acteurB, pathActors, pathMovies);
-		boolean isOk = ecrireFichierXML(path, output);
-		if (isOk) {
-			System.out.println("OK");
+
+		if (ecrireFichierXML(path, output)) {
+			System.out.println("EcrireFichierXML (" + output + ") : OK");
 		} else {
-			System.out.println("KO");
+			System.out.println("EcrireFichierXML (" + output + ") : KO");
 		}
 
 	}
@@ -131,16 +131,148 @@ public class Graph {
 	 */
 	public void calculerCheminCoutMinimum(String acteurA, String acteurB, String output) {
 		// TODO Auto-generated method stub
-		
-		HashSet<Actor> visited = new HashSet<>();
-		SortedSet<Actor> sorted = new TreeSet<>(new Comparator<Actor>() {
-			
-			@Override
-			public int compare(Actor o1, Actor o2) {
-				// TODO Auto-generated method stub
-				return 0;
+
+		HashMap<Actor, Actor> pathActors = new HashMap<>();
+		HashMap<Actor, Movie> pathMovies = new HashMap<>();
+
+		HashSet<Movie> visitedMovies = new HashSet<>();
+		HashSet<String> visited = new HashSet<>();
+		ArrayDeque<Actor> queue = new ArrayDeque<>();
+
+		SortedSet<Actor> eTmp = new TreeSet<>(comparator());
+		HashMap<String, Integer> eDef = new HashMap<>();
+
+		Actor sommet = this.actorsID.get(this.actorsName.get(acteurA));
+		sommet.setCost(0);
+
+		queue.add(sommet);
+		visited.add(sommet.getId());
+		eDef.put(sommet.getId(), 0);
+
+		boolean found = false;
+		while(!queue.isEmpty() && !found) {
+
+			Actor current = queue.removeFirst();
+			visited.add(current.getId());
+
+			if(eDef.containsKey(this.getActorsName().get(acteurB))) {
+				found = true;
 			}
-		});
+
+			for(Movie movie : current.getMovies()) {
+				if(!visitedMovies.contains(movie)) {
+
+					for(String actorID : movie.getActors()) {
+
+						if(!eDef.containsKey(actorID)) {
+							Actor actor = this.actorsID.get(actorID);
+							int movieCost = movie.getActors().size();
+							int old_cost = actor.getCost();
+
+							if(eTmp.contains(actor)) {
+								if(old_cost > (current.getCost() + movieCost)) {
+									eTmp.remove(actor);
+									actor.setCost(current.getCost() + movieCost);
+									eTmp.add(actor);
+									pathActors.put(actor, current);
+									pathMovies.put(actor, movie);
+								}
+							}else {
+								actor.setCost(current.getCost() + movieCost);
+								eTmp.add(actor);
+								pathActors.put(actor, current);
+								pathMovies.put(actor, movie);
+							}
+						}
+					}
+					visitedMovies.add(movie);
+				}
+			}
+			Actor min = eTmp.first();
+			eTmp.remove(min);
+			eDef.put(min.getId(), min.getCost());
+			queue.addLast(min);
+		}
+
+		Path path = formaterHistorique(acteurA, acteurB, pathActors, pathMovies);
+
+		if (ecrireFichierXML(path, output)) {
+			System.out.println("EcrireFichierXML (" + output + ") : OK");
+		} else {
+			System.out.println("EcrireFichierXML (" + output + ") : KO");
+		}
+
+	}
+
+	/*
+	 *  Bonus : 2 calculer un chemin en minimisant 
+	 *  d'abord le combre de films et ensuite le cout 
+	 */
+	public void calculerCheminLePlusCourtAvecCoutMinimum(String acteurA, String acteurB, String output) {
+		// TODO Auto-generated method stub
+		
+		HashSet<String> visited = new HashSet<>();
+		HashSet<Movie> visitedMovies = new HashSet<>();
+		ArrayDeque<Actor> queue = new ArrayDeque<>();
+
+		HashMap<Actor, Actor> pathActors = new HashMap<>();
+		HashMap<Actor, Movie> pathMovies = new HashMap<>();
+		HashSet<Path> shortestPath = new HashSet<>();
+		
+		queue.add(this.actorsID.get(this.actorsName.get(acteurA)));
+		visited.add(this.actorsName.get(acteurA));
+
+		boolean found = false;
+		
+		while(!queue.isEmpty()) {
+
+			Actor current = queue.removeFirst();
+
+			for (Movie movie : current.getMovies()) {
+
+				if (!visitedMovies.contains(movie)) {
+
+					if(movie.getActors().contains(this.actorsName.get(acteurB))) {
+						shortestPath.add(formaterHistorique(acteurA, acteurB, pathActors, pathMovies));
+						found = true;
+					}
+
+					for (String actorID : movie.getActors()) {
+						if(!visited.contains(actorID)) {
+							pathActors.put(this.actorsID.get(actorID), current);
+							pathMovies.put(this.actorsID.get(actorID), movie);
+							queue.addLast(this.actorsID.get(actorID));
+							visited.add(actorID);
+						}
+					}
+					visitedMovies.add(movie);
+				}
+			}
+		}
+		
+		Path path = formaterHistorique(acteurA, acteurB, pathActors, pathMovies);
+		int ShortestPath = path.getNbMovies();
+		
+		
+		if (ecrireFichierXML(path, output)) {
+			System.out.println("EcrireFichierXML (" + output + ") : OK");
+		} else {
+			System.out.println("EcrireFichierXML (" + output + ") : KO");
+		}
+	}
+	
+	private Comparator<Actor> comparator() {
+		return new Comparator<Actor>() {
+			@Override
+			public int compare(Actor a1, Actor a2) {
+				// TODO Auto-generated method stub
+				if(a1.getCost() == a2.getCost()) {
+					return (int) a1.getId().compareTo(a2.getId());
+				}else {
+					return a1.getCost() - a2.getCost();
+				}
+			}
+		};
 	}
 
 	public Path formaterHistorique(String acteurA, String acteurB, HashMap<Actor, Actor> pathActors,
@@ -219,5 +351,6 @@ public class Graph {
 
 		return true;
 	}
+
 
 }

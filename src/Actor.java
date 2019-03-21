@@ -2,12 +2,14 @@ import java.util.HashSet;
 
 public class Actor {
 	
+	private int cost;
 	private String id;
 	private String name;
 	private HashSet<Movie> movies;
 	
 	public Actor(String id, String name) {
 		this.id = id;
+		this.cost = Integer.MAX_VALUE;
 		this.name = name;
 		this.movies = new HashSet<>();
 	}
@@ -26,6 +28,19 @@ public class Actor {
 
 	public HashSet<Movie> getMovies() {
 		return movies;
+	}
+
+	public int getCost() {
+		return cost;
+	}
+
+	public void setCost(int cost) {
+		this.cost = cost;
+	}
+
+	@Override
+	public String toString() {
+		return "Actor [id=" + id + ", name=" + name + ", movies=" + movies + "]";
 	}
 
 	@Override
@@ -51,11 +66,6 @@ public class Actor {
 		} else if (!id.equals(other.id))
 			return false;
 		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "Actor [id=" + id + ", name=" + name + ", movies=" + movies + "]";
 	}
 	
 }
