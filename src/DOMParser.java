@@ -12,7 +12,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 
-/* Bonus : 1. Implémentez un parseur DOM pour créer le graphe */
+/* Bonus : 1. Implï¿½mentez un parseur DOM pour crï¿½er le graphe */
 public class DOMParser {
 
 	Document doc;

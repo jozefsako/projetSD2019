@@ -12,27 +12,17 @@ public class Main {
 			SAXHandler userhandler = new SAXHandler();
 			saxParser.parse(inputFile, userhandler);
 			Graph g = userhandler.getGraph();
-<<<<<<< HEAD
 
-			/* BFS */
-			g.calculerCheminLePlusCourt("Macaulay Culkin", "Guillaume Canet", "output.xml");
-			
-			/* Dijkstra */
-			g.calculerCheminCoutMinimum("Macaulay Culkin", "Guillaume Canet","output2.xml");
-=======
 			try {
+				/* BFS */
 				g.calculerCheminLePlusCourt("Macaulay Culkin", "Guillaume Canet", "output.xml");
+
+				/* Dijkstra */
+				g.calculerCheminCoutMinimum("Macaulay Culkin", "Guillaume Canet","output2.xml");
+				
 			}catch(ActorNotFoundException ex) {
 				System.out.println(ex.getMessage());
 			}
-			// g.calculerCheminCoutMinimum("Macaulay Culkin", "Guillaume Canet",
-			// "output2.xml");
-
-			/*
-			 * System.out.println("\tMovies"); for(Entry<String, Movie> entry:
-			 * g.getMovies().entrySet()) { System.out.println(entry.getValue()); }
-			 */
->>>>>>> 52ad0dab6fbaf0e7a3a56294a675d555d46e1302
 
 			/* Bonus : Dijkstra + BFS */
 			g.calculerCheminLePlusCourtAvecCoutMinimum("Macaulay Culkin", "Guillaume Canet", "output.xml");

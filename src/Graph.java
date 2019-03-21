@@ -116,7 +116,7 @@ public class Graph {
 		}
 		
 		if(!found) {
-			throw new ActorNotFoundException("Pas de lien trouvé entre " + acteurA + " et " + acteurB + " non trouvé");
+			throw new ActorNotFoundException("Pas de lien trouve entre " + acteurA + " et " + acteurB + " non trouve");
 		}
 
 		Path path = formaterHistorique(acteurA, acteurB, pathActors, pathMovies);
@@ -132,7 +132,7 @@ public class Graph {
 	/*
 	 * Dijkstra : Shortest paths between nodes in a graph
 	 */
-	public void calculerCheminCoutMinimum(String acteurA, String acteurB, String output) {
+	public void calculerCheminCoutMinimum(String acteurA, String acteurB, String output) throws ActorNotFoundException{
 		// TODO Auto-generated method stub
 
 		HashMap<Actor, Actor> pathActors = new HashMap<>();
@@ -196,6 +196,10 @@ public class Graph {
 			eDef.put(min.getId(), min.getCost());
 			queue.addLast(min);
 		}
+		
+		if(!found) {
+			throw new ActorNotFoundException("Pas de lien trouve entre " + acteurA + " et " + acteurB + " non trouve");
+		}
 
 		Path path = formaterHistorique(acteurA, acteurB, pathActors, pathMovies);
 
@@ -211,7 +215,7 @@ public class Graph {
 	 *  Bonus : 2 calculer un chemin en minimisant 
 	 *  d'abord le combre de films et ensuite le cout 
 	 */
-	public void calculerCheminLePlusCourtAvecCoutMinimum(String acteurA, String acteurB, String output) {
+	public void calculerCheminLePlusCourtAvecCoutMinimum(String acteurA, String acteurB, String output) throws ActorNotFoundException{
 		// TODO Auto-generated method stub
 		
 		HashSet<String> visited = new HashSet<>();
@@ -251,6 +255,10 @@ public class Graph {
 					visitedMovies.add(movie);
 				}
 			}
+		}
+		
+		if(!found) {
+			throw new ActorNotFoundException("Pas de lien trouve entre " + acteurA + " et " + acteurB + " non trouve");
 		}
 		
 		Path path = formaterHistorique(acteurA, acteurB, pathActors, pathMovies);
