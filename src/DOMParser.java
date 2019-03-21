@@ -11,6 +11,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+
 /* Bonus : 1. Implémentez un parseur DOM pour créer le graphe */
 public class DOMParser {
 
@@ -30,18 +31,21 @@ public class DOMParser {
 	public void lireLeFichier() {
 		NodeList actors = doc.getElementsByTagName("actor");
 		NodeList movies = doc.getElementsByTagName("movie");
-		for(int i = 0; i < movies.getLength(); i++) {
+		int actorsLength = actors.getLength();
+		int moviesLength = movies.getLength();
+		
+		for(int i = 0; i < actorsLength; i++) {
+			Node noeud = actors.item(i);
+			Element actorElement = (Element) noeud;
+			Actor actor = new Actor(actorElement.getAttribute("id"), actorElement.getAttribute("name"));
+			graph.addActor(actor);
+		}
+		
+		for(int i = 0; i < moviesLength; i++) {
 			Node noeud = movies.item(i);
-			System.out.println(noeud.getNodeName());
-			if(noeud.getNodeName().equalsIgnoreCase("actor")){
-				Element actorElement = (Element) noeud;
-				Actor actor = new Actor(actorElement.getAttribute("id"), actorElement.getAttribute("name"));
-				graph.addActor(actor);
-			}else if(noeud.getNodeName().equalsIgnoreCase("movie")) {
-				Element movieElement = (Element) noeud;
-				Movie movie = new Movie(movieElement.getAttribute("year"), movieElement.getAttribute("actors"), movieElement.getTextContent());
-				graph.addMovie(movie);
-			}
+			Element movieElement = (Element) noeud;
+			Movie movie = new Movie(movieElement.getAttribute("year"), movieElement.getAttribute("actors"), movieElement.getTextContent());
+			graph.addMovie(movie);
 		}
 	}
 	
