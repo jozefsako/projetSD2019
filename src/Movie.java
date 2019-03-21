@@ -12,6 +12,12 @@ public class Movie {
 		this.actors = new ArrayList<String>(Arrays.asList(actors.split(" ")));
 		this.title = "";
 	}
+	
+	public Movie(String year, String actors, String title) {
+		this.year = year;
+		this.actors = new ArrayList<String>(Arrays.asList(actors.split(" ")));
+		this.title = title;
+	}
 
 	public String getTitle() {
 		return title;
