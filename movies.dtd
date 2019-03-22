@@ -1,14 +1,8 @@
-<!DOCTYPE path 
-[
+<!ELEMENT movies (actor, movie)*>
+<!ELEMENT actor EMPTY>
+<!ELEMENT movie (#PCDATA)>
 
-
-<!ELEMENT path (actor, movie)*>
-<!ELEMENT actor (#PCDATA)>
-<!ELEMENT movie EMPTY> 
-
-<!ATTLIST path cost NMTOKEN #IMPLIED>
-<!ATTLIST path nbMovies NMTOKEN #REQUIRED>
-<!ATTLIST movie name CDATA #REQUIRED>
-<!ATTLIST movie	year NMTOKEN #REQUIRED>
-
-]>
+<!ATTLIST actor id ID #REQUIRED>
+<!ATTLIST actor name CDATA #REQUIRED>
+<!ATTLIST movie actors IDREFS #REQUIRED>
+<!ATTLIST movie year NMTOKEN #REQUIRED>

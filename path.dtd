@@ -1,0 +1,8 @@
+<!ELEMENT path (actor, movie)*>
+<!ELEMENT actor (#PCDATA)>
+<!ELEMENT movie EMPTY> 
+
+<!ATTLIST path cost NMTOKEN #REQUIRED>
+<!ATTLIST path nbMovies NMTOKEN #REQUIRED>
+<!ATTLIST movie name CDATA #REQUIRED>
+<!ATTLIST movie	year NMTOKEN #REQUIRED>
