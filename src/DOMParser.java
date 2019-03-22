@@ -11,47 +11,46 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-
-/* Bonus : 1. Impl�mentez un parseur DOM pour cr�er le graphe */
+/* Bonus : 1. Implementez un parseur DOM pour creer le graphe */
 public class DOMParser {
 
 	Document doc;
 	Graph graph;
-	
+
 	public DOMParser() {
 		this.graph = new Graph();
 	}
-	
+
 	public void chargerLeFichier(File file) throws SAXException, IOException, ParserConfigurationException {
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 		doc = dBuilder.parse(file);
 	}
-	
+
 	public void lireLeFichier() {
 		NodeList actors = doc.getElementsByTagName("actor");
 		NodeList movies = doc.getElementsByTagName("movie");
 		int actorsLength = actors.getLength();
 		int moviesLength = movies.getLength();
-		
-		for(int i = 0; i < actorsLength; i++) {
+
+		for (int i = 0; i < actorsLength; i++) {
 			Node noeud = actors.item(i);
 			Element actorElement = (Element) noeud;
 			Actor actor = new Actor(actorElement.getAttribute("id"), actorElement.getAttribute("name"));
 			graph.addActor(actor);
 		}
-		
-		for(int i = 0; i < moviesLength; i++) {
+
+		for (int i = 0; i < moviesLength; i++) {
 			Node noeud = movies.item(i);
 			Element movieElement = (Element) noeud;
-			Movie movie = new Movie(movieElement.getAttribute("year"), movieElement.getAttribute("actors"), movieElement.getTextContent());
+			Movie movie = new Movie(movieElement.getAttribute("year"), movieElement.getAttribute("actors"),
+					movieElement.getTextContent());
 			graph.addMovie(movie);
 		}
 	}
-	
+
 	public Graph getGraph() {
 		return graph;
 	}
-	
-	
+
 }

@@ -4,8 +4,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
-import java.util.Queue;
 import java.util.SortedSet;
+import java.util.Stack;
 import java.util.TreeSet;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -85,12 +85,13 @@ public class Graph {
 
 		HashMap<Actor, Actor> pathActors = new HashMap<>();
 		HashMap<Actor, Movie> pathMovies = new HashMap<>();
+		HashMap<HashMap<Movie, Integer>, Actor> costs = new HashMap<>();
 
 		queue.add(this.actorsID.get(this.actorsName.get(acteurA)));
 		visited.add(this.actorsName.get(acteurA));
 
 		boolean found = false;
-		while(!queue.isEmpty() && !found) {
+		while (!queue.isEmpty() && !found) {
 
 			Actor current = queue.removeFirst();
 
@@ -98,12 +99,12 @@ public class Graph {
 
 				if (!visitedMovies.contains(movie)) {
 
-					if(movie.getActors().contains(this.actorsName.get(acteurB))) {
+					if (movie.getActors().contains(this.actorsName.get(acteurB))) {
 						found = true;
 					}
 
 					for (String actorID : movie.getActors()) {
-						if(!visited.contains(actorID)) {
+						if (!visited.contains(actorID)) {
 							pathActors.put(this.actorsID.get(actorID), current);
 							pathMovies.put(this.actorsID.get(actorID), movie);
 							queue.addLast(this.actorsID.get(actorID));
@@ -114,8 +115,8 @@ public class Graph {
 				}
 			}
 		}
-		
-		if(!found) {
+
+		if (!found) {
 			throw new ActorNotFoundException("Pas de lien trouve entre " + acteurA + " et " + acteurB + " non trouve");
 		}
 
@@ -132,7 +133,7 @@ public class Graph {
 	/*
 	 * Dijkstra : Shortest paths between nodes in a graph
 	 */
-	public void calculerCheminCoutMinimum(String acteurA, String acteurB, String output) throws ActorNotFoundException{
+	public void calculerCheminCoutMinimum(String acteurA, String acteurB, String output) throws ActorNotFoundException {
 		// TODO Auto-generated method stub
 
 		HashMap<Actor, Actor> pathActors = new HashMap<>();
@@ -153,34 +154,34 @@ public class Graph {
 		eDef.put(sommet.getId(), 0);
 
 		boolean found = false;
-		while(!queue.isEmpty() && !found) {
+		while (!queue.isEmpty() && !found) {
 
 			Actor current = queue.removeFirst();
 			visited.add(current.getId());
 
-			if(eDef.containsKey(this.getActorsName().get(acteurB))) {
+			if (eDef.containsKey(this.getActorsName().get(acteurB))) {
 				found = true;
 			}
 
-			for(Movie movie : current.getMovies()) {
-				if(!visitedMovies.contains(movie)) {
+			for (Movie movie : current.getMovies()) {
+				if (!visitedMovies.contains(movie)) {
 
-					for(String actorID : movie.getActors()) {
+					for (String actorID : movie.getActors()) {
 
-						if(!eDef.containsKey(actorID)) {
+						if (!eDef.containsKey(actorID)) {
 							Actor actor = this.actorsID.get(actorID);
 							int movieCost = movie.getActors().size();
 							int old_cost = actor.getCost();
 
-							if(eTmp.contains(actor)) {
-								if(old_cost > (current.getCost() + movieCost)) {
+							if (eTmp.contains(actor)) {
+								if (old_cost > (current.getCost() + movieCost)) {
 									eTmp.remove(actor);
 									actor.setCost(current.getCost() + movieCost);
 									eTmp.add(actor);
 									pathActors.put(actor, current);
 									pathMovies.put(actor, movie);
 								}
-							}else {
+							} else {
 								actor.setCost(current.getCost() + movieCost);
 								eTmp.add(actor);
 								pathActors.put(actor, current);
@@ -196,8 +197,8 @@ public class Graph {
 			eDef.put(min.getId(), min.getCost());
 			queue.addLast(min);
 		}
-		
-		if(!found) {
+
+		if (!found) {
 			throw new ActorNotFoundException("Pas de lien trouve entre " + acteurA + " et " + acteurB + " non trouve");
 		}
 
@@ -212,12 +213,12 @@ public class Graph {
 	}
 
 	/*
-	 *  Bonus : 2 calculer un chemin en minimisant 
-	 *  d'abord le combre de films et ensuite le cout 
+	 * Bonus : 2 calculer un chemin en minimisant d'abord le combre de films et
+	 * ensuite le cout
 	 */
-	public void calculerCheminLePlusCourtAvecCoutMinimum(String acteurA, String acteurB, String output) throws ActorNotFoundException{
-		// TODO Auto-generated method stub
-		
+	public void calculerCheminLePlusCourtAvecCoutMinimum(String acteurA, String acteurB, String output)
+			throws ActorNotFoundException {
+
 		HashSet<String> visited = new HashSet<>();
 		HashSet<Movie> visitedMovies = new HashSet<>();
 		ArrayDeque<Actor> queue = new ArrayDeque<>();
@@ -225,13 +226,13 @@ public class Graph {
 		HashMap<Actor, Actor> pathActors = new HashMap<>();
 		HashMap<Actor, Movie> pathMovies = new HashMap<>();
 		HashSet<Path> shortestPath = new HashSet<>();
-		
+
 		queue.add(this.actorsID.get(this.actorsName.get(acteurA)));
 		visited.add(this.actorsName.get(acteurA));
 
 		boolean found = false;
-		
-		while(!queue.isEmpty()) {
+
+		while (!queue.isEmpty()) {
 
 			Actor current = queue.removeFirst();
 
@@ -239,13 +240,13 @@ public class Graph {
 
 				if (!visitedMovies.contains(movie)) {
 
-					if(movie.getActors().contains(this.actorsName.get(acteurB))) {
+					if (movie.getActors().contains(this.actorsName.get(acteurB))) {
 						shortestPath.add(formaterHistorique(acteurA, acteurB, pathActors, pathMovies));
 						found = true;
 					}
 
 					for (String actorID : movie.getActors()) {
-						if(!visited.contains(actorID)) {
+						if (!visited.contains(actorID)) {
 							pathActors.put(this.actorsID.get(actorID), current);
 							pathMovies.put(this.actorsID.get(actorID), movie);
 							queue.addLast(this.actorsID.get(actorID));
@@ -256,30 +257,29 @@ public class Graph {
 				}
 			}
 		}
-		
-		if(!found) {
+
+		if (!found) {
 			throw new ActorNotFoundException("Pas de lien trouve entre " + acteurA + " et " + acteurB + " non trouve");
 		}
-		
+
 		Path path = formaterHistorique(acteurA, acteurB, pathActors, pathMovies);
 		int ShortestPath = path.getNbMovies();
-		
-		
+
 		if (ecrireFichierXML(path, output)) {
 			System.out.println("EcrireFichierXML (" + output + ") : OK");
 		} else {
 			System.out.println("EcrireFichierXML (" + output + ") : KO");
 		}
 	}
-	
+
 	private Comparator<Actor> comparator() {
 		return new Comparator<Actor>() {
 			@Override
 			public int compare(Actor a1, Actor a2) {
 				// TODO Auto-generated method stub
-				if(a1.getCost() == a2.getCost()) {
-					return (int) a1.getId().compareTo(a2.getId());
-				}else {
+				if (a1.getCost() == a2.getCost()) {
+					return a1.getId().compareTo(a2.getId());
+				} else {
 					return a1.getCost() - a2.getCost();
 				}
 			}
@@ -290,16 +290,16 @@ public class Graph {
 			HashMap<Actor, Movie> pathMovies) {
 
 		int cost = 0, nbMovies = 0;
-		Queue<Actor> actors = new ArrayDeque<Actor>();
-		Queue<Movie> movies = new ArrayDeque<Movie>();
-		Actor tmpActor = actorsID.get(actorsName.get(acteurB));
-		Actor parent = tmpActor;
+		Stack<Actor> actors = new Stack<Actor>();
+		Stack<Movie> movies = new Stack<Movie>();
+		Actor parent = actorsID.get(actorsName.get(acteurB));
 
 		while (!parent.getName().equalsIgnoreCase(acteurA)) {
 			for (Entry<Actor, Actor> entry : pathActors.entrySet()) {
 				if (entry.getKey().getName().equalsIgnoreCase(parent.getName())) {
 					actors.add(parent);
 					movies.add(pathMovies.get(parent));
+					cost += movies.peek().getActors().size();
 					parent = entry.getValue();
 				}
 			}
@@ -307,7 +307,6 @@ public class Graph {
 		actors.add(actorsID.get(actorsName.get(acteurA)));
 		nbMovies = movies.size();
 
-		// TODO cost
 		Path path = new Path(cost, nbMovies, actors, movies);
 		return path;
 	}
@@ -328,13 +327,13 @@ public class Graph {
 			root.setAttributeNode(attrNbMovies);
 			document.appendChild(root);
 
-			Actor actor = path.getActors().poll();
-			Movie movie = path.getMovies().poll();
-			while (actor != null) {
+			while (!path.getActors().isEmpty()) {
+				Actor actor = path.getActors().pop();
 				Element actorElement = document.createElement("actor");
 				actorElement.appendChild(document.createTextNode(actor.getName()));
 				root.appendChild(actorElement);
-				if (movie != null) {
+				if (!path.getMovies().isEmpty()) {
+					Movie movie = path.getMovies().pop();
 					Element movieElement = document.createElement("movie");
 					Attr nameAttr = document.createAttribute("name");
 					Attr yearAttr = document.createAttribute("year");
@@ -343,9 +342,7 @@ public class Graph {
 					movieElement.setAttributeNode(nameAttr);
 					movieElement.setAttributeNode(yearAttr);
 					root.appendChild(movieElement);
-					movie = path.getMovies().poll();
 				}
-				actor = path.getActors().poll();
 			}
 
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -362,6 +359,5 @@ public class Graph {
 
 		return true;
 	}
-
 
 }

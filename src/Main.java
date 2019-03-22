@@ -18,14 +18,14 @@ public class Main {
 				g.calculerCheminLePlusCourt("Macaulay Culkin", "Guillaume Canet", "output.xml");
 
 				/* Dijkstra */
-				g.calculerCheminCoutMinimum("Macaulay Culkin", "Guillaume Canet","output2.xml");
-				
-			}catch(ActorNotFoundException ex) {
+				g.calculerCheminCoutMinimum("Macaulay Culkin", "Guillaume Canet", "output2.xml");
+
+			} catch (ActorNotFoundException ex) {
 				System.out.println(ex.getMessage());
 			}
 
 			/* Bonus : Dijkstra + BFS */
-			g.calculerCheminLePlusCourtAvecCoutMinimum("Macaulay Culkin", "Guillaume Canet", "output.xml");
+			g.calculerCheminLePlusCourtAvecCoutMinimum("Macaulay Culkin", "Guillaume Canet", "output3.xml");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

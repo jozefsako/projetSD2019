@@ -1,12 +1,12 @@
-import java.util.Queue;
+import java.util.Stack;
 
 public class Path {
 	private int cost;
 	private int nbMovies;
-	private Queue<Actor> actors;
-	private Queue<Movie> movies;
+	private Stack<Actor> actors;
+	private Stack<Movie> movies;
 
-	public Path(int cost, int nbMovies, Queue<Actor> actors2, Queue<Movie> movies2) {
+	public Path(int cost, int nbMovies, Stack<Actor> actors2, Stack<Movie> movies2) {
 		this.cost = cost;
 		this.nbMovies = nbMovies;
 		this.actors = actors2;
@@ -21,11 +21,11 @@ public class Path {
 		return nbMovies;
 	}
 
-	public Queue<Actor> getActors() {
+	public Stack<Actor> getActors() {
 		return actors;
 	}
 
-	public Queue<Movie> getMovies() {
+	public Stack<Movie> getMovies() {
 		return movies;
 	}
 }
