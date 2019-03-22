@@ -30,8 +30,6 @@ public class Graph {
 	private HashMap<String, Actor> actorsID;
 	private HashMap<String, Movie> movies;
 
-	Document document;
-
 	public Graph() {
 		this.moviesOfActor = new HashMap<>();
 		this.actorsOfMovie = new HashMap<>();
@@ -85,7 +83,6 @@ public class Graph {
 
 		HashMap<Actor, Actor> pathActors = new HashMap<>();
 		HashMap<Actor, Movie> pathMovies = new HashMap<>();
-		HashMap<HashMap<Movie, Integer>, Actor> costs = new HashMap<>();
 
 		queue.add(this.actorsID.get(this.actorsName.get(acteurA)));
 		visited.add(this.actorsName.get(acteurA));
@@ -286,6 +283,9 @@ public class Graph {
 		};
 	}
 
+	/*
+	 * Formate les acteurs trouve.
+	 */
 	public Path formaterHistorique(String acteurA, String acteurB, HashMap<Actor, Actor> pathActors,
 			HashMap<Actor, Movie> pathMovies) {
 
@@ -311,6 +311,9 @@ public class Graph {
 		return path;
 	}
 
+	/*
+	 * Ecrit un fichier XML avec les donnees du chemin trouve.
+	 */
 	public boolean ecrireFichierXML(Path path, String output) {
 		try {
 			DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
